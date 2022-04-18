@@ -73,6 +73,12 @@ node * TreeMul(node * left_son, node * right_son);
 node * TreeDiv(node * left_son, node * right_son);
 node * TreeNodeAdd2(int type, node * nd, DATA data, node * left_son = NULL, node * right_son = NULL);
 node * TreeNodeCopy(node * nd);
+node * TreeSin(node * right_son);
+node * TreeCos(node * right_son);
+node * NUM(int num);
+node * LN(node * nd);
+node * TreeSh(node * right_son);
+node * TreeCh(node * right_son);
 
 
 

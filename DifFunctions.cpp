@@ -25,7 +25,7 @@ node * TreeNodeAdd2(int type, node * nd, DATA data, node * left_son, node * righ
     nd -> type = type;
 
     nd -> data = data;
-
+    
     nd -> left_son = left_son;
     nd -> right_son = right_son;
 
@@ -389,10 +389,18 @@ void TreeScanf(FILE * fp, node ** nd)
     fscanf(fp, "%c", &bracket);   
 }
 
+
+
 #define dL TreeDiff(nd -> left_son)
 #define dR TreeDiff(nd -> right_son)
 #define cL TreeNodeCopy(nd -> left_son)
 #define cR TreeNodeCopy(nd -> right_son)
+#define sin TreeSin(nd -> right_son)
+#define cos TreeCos(nd -> right_son)
+#define sh TreeSh(nd -> right_son)
+#define ch TreeCh(nd -> right_son)
+#define minus TreeNodeAdd2(T_NUM, NULL, data_minus)
+
 
 node * TreeDiff(node * nd)
 {
@@ -401,14 +409,11 @@ node * TreeDiff(node * nd)
     switch (nd -> type)
     {
     case T_NUM:
-        return TreeNodeAdd(T_NUM, &nd, data);
+        return NUM(0);
         break;
 
     case T_VAR:
-        TreeNodeAdd(T_NUM, &nd, data);
-        nd -> data.int_t = 1;
-
-        return nd;
+        return NUM(1);
         break;
 
     case T_OP:
@@ -416,18 +421,14 @@ node * TreeDiff(node * nd)
         {
         case OP_ADD:
             LOX
-            TreeNodeAdd(T_OP, &nd, data, dL, dR);
-            nd -> data.ch_t = OP_ADD;
 
-            return nd;
+            return TreeAdd(dL, dR);
             break;
 
         case OP_SUB:
             LOX
-            TreeNodeAdd(T_OP, &nd, data, dL, dR);
-            nd -> data.ch_t = OP_SUB;
 
-            return nd;
+            return TreeSub(dL, dR);
             break;
 
         case OP_MUL:
@@ -446,7 +447,79 @@ node * TreeDiff(node * nd)
             exit(EXIT_FAILURE);
             break;
         }
+        break;
 
+    case T_FUN:
+        switch(nd -> data.ch_t)
+        {
+        case F_sin:
+            LOX
+
+            return TreeMul(cos, dR);
+            break;
+        
+        case F_cos:
+            LOX
+
+            return TreeMul(TreeMul(sin, NUM(-1)), dR);
+            break;
+
+        case F_tg:
+            LOX
+
+            return TreeDiv(dR, TreeMul(cos, cos));
+            break;
+
+        case F_ctg:
+            LOX
+
+            return TreeDiv(TreeMul(NUM(-1), dR), TreeMul(sin, sin));
+            break;
+
+        case F_ln:
+            LOX
+
+            return TreeDiv(dR, cR);
+            break;
+
+        case F_log:
+            LOX
+
+            return TreeDiv(dR, TreeMul(cR, LN(NUM(10))));
+            break;
+
+        case F_sh:
+            LOX
+
+            return TreeMul(ch, dR);
+            break;
+
+        case F_ch:
+            LOX
+
+            return TreeMul(sh, dR);
+            break;
+
+        case F_th:
+            LOX
+
+            return TreeDiv(dR, TreeMul(ch, ch));
+            break;
+
+        case F_cth:
+            LOX
+
+            return TreeDiv(TreeMul(NUM(-1), dR), TreeMul(sh, sh));
+            break;
+
+        default:
+            LOX
+            printf("unidentified function\n");
+            exit(EXIT_FAILURE);
+            break;
+        }
+        break;
+    
     default:
         LOX
         printf("unidentified type\n");
@@ -480,7 +553,7 @@ node * TreeMul(node * left_son, node * right_son)
     DATA data = { 0 };
 
     data.ch_t = OP_MUL;
-    return TreeNodeAdd2(T_OP, NULL, data, left_son, right_son);
+    return TreeNodeAdd2(T_OP, NULL, data, TreeNodeCopy(left_son), TreeNodeCopy(right_son));
 }
 
 node * TreeDiv(node * left_son, node * right_son)
@@ -489,12 +562,79 @@ node * TreeDiv(node * left_son, node * right_son)
     DATA data = { 0 };
 
     data.ch_t = OP_DIV;
-    return TreeNodeAdd2(T_OP, NULL, data, left_son, right_son);
+    return TreeNodeAdd2(T_OP, NULL, data, TreeNodeCopy(left_son), TreeNodeCopy(right_son));
+}
+
+node * TreeSin(node * right_son)
+{
+    LOX
+    DATA data = { 0 };
+    data.ch_t = F_sin;
+
+    return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(right_son));
+}
+
+node * TreeSh(node * right_son)
+{
+    LOX
+    DATA data = { 0 };
+    data.ch_t = F_sh;
+
+    return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(right_son));
+}
+
+node * TreeCos(node * right_son)
+{
+    LOX
+    DATA data = { 0 };
+    data.ch_t = F_cos;
+
+    return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(right_son));
+}
+
+node * TreeCh(node * right_son)
+{
+    LOX
+    DATA data = { 0 };
+    data.ch_t = F_ch;
+
+    return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(right_son));
+}
+
+node * NUM(int num)
+{   
+    DATA data = { 0 };
+    data.int_t = num;
+
+    return TreeNodeAdd2(T_NUM, NULL, data);
+}
+
+node * LN(node * nd)
+{
+    DATA data = { 0 };
+    data.ch_t = F_ln;
+
+    return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(nd));
 }
 
 node * TreeNodeCopy(node * nd)
 {
     if(nd -> left_son) nd -> left_son = TreeNodeCopy(nd ->left_son);
     if(nd -> right_son) nd -> right_son = TreeNodeCopy(nd -> right_son);
-    return TreeNodeAdd2(nd -> type, NULL, nd -> data, nd -> left_son, nd -> right_son);
+
+    node * new_nd = (node *) calloc(1, sizeof(node));
+    assert(new_nd);
+
+        new_nd -> type = nd -> type;
+
+        new_nd -> data = nd -> data;
+        
+        if(nd -> left_son) new_nd -> left_son  = (node *) calloc(1, sizeof(node));
+
+        if(nd -> right_son) new_nd -> right_son = (node *) calloc(1, sizeof(node));
+
+        if(nd -> left_son) *new_nd -> left_son = *nd ->left_son;
+        if(nd -> right_son) *new_nd -> right_son = *nd -> right_son;
+
+    return new_nd;
 }
