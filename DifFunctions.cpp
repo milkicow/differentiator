@@ -435,12 +435,39 @@ node * TreeDiff(node * nd)
             LOX
             return TreeAdd(TreeMul(dL, cR), TreeMul(cL, dR));
             break;
+
         case OP_DIV:
             LOX
-            return TreeDiv(TreeSub(TreeMul(dL, cR), TreeMul(cL, dR)), TreeMul(cR, cR));
+            return TreeDiv(TreeSub(TreeMul(dL, cR), TreeMul(cL, dR)), DEG(cR, NUM(2)));
 
-            //return TreeDiv(TreeSub(TreeMul(TreeDiff(nd -> left_son), TreeNodeCopy(nd -> right_son)), TreeMul(TreeNodeCopy(nd ->left_son), TreeDiff(nd ->right_son))), TreeMul(TreeNodeCopy(nd -> right_son), TreeNodeCopy(nd -> right_son)));
             break;
+
+        case OP_DEG:
+            LOX
+            if(nd -> left_son -> type == T_NUM)
+            {   
+                if(nd -> right_son -> type == T_NUM)
+                {
+                    return NUM(0);
+                }
+                else
+                {
+                    return TreeMul(TreeMul(DEG(nd -> left_son, nd ->right_son), LN(nd -> left_son)), dR);
+                }
+            }
+            else if(nd -> right_son -> type == T_NUM)
+            {  
+                data.int_t = nd -> right_son -> data.int_t - 1;
+                return TreeMul(TreeMul(DEG(nd -> left_son, TreeNodeAdd2(T_NUM, NULL, data)), cR), dL);
+                data.int_t = 0;
+            
+            }
+            else
+            {
+                return TreeMul(DEG(nd -> left_son, nd -> right_son), TreeDiff(TreeMul(nd -> right_son, LN(nd -> left_son))));
+            }
+            break;
+        
         default:
             LOX
             printf("unidentified operand\n");
@@ -615,6 +642,14 @@ node * LN(node * nd)
     data.ch_t = F_ln;
 
     return TreeNodeAdd2(T_FUN, NULL, data, NULL, TreeNodeCopy(nd));
+}
+
+node * DEG(node * left_son, node * right_son)
+{
+    DATA data = { 0 };
+    data.ch_t = OP_DEG;
+
+    return TreeNodeAdd2(T_OP, NULL, data, TreeNodeCopy(left_son), TreeNodeCopy(right_son));
 }
 
 node * TreeNodeCopy(node * nd)

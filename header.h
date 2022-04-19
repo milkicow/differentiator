@@ -79,7 +79,7 @@ node * NUM(int num);
 node * LN(node * nd);
 node * TreeSh(node * right_son);
 node * TreeCh(node * right_son);
-
+node * DEG(node * left_son, node * right_son);
 
 
 
