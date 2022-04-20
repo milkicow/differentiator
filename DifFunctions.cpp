@@ -34,14 +34,17 @@ node * TreeNodeAdd2(int type, node * nd, DATA data, node * left_son, node * righ
 
 void TreeDtor(node * nd)  //дерево и его поддерево
 {   
+    LOX
     if(nd != NULL)
     {   
         LOX
         TreeDtor(nd -> left_son);
+        LOX
         TreeDtor(nd -> right_son);
 
         free(nd);
     }
+    LOX
 }
 
 
@@ -672,4 +675,45 @@ node * TreeNodeCopy(node * nd)
         if(nd -> right_son) *new_nd -> right_son = *nd -> right_son;
 
     return new_nd;
+}
+
+void TreeSimp(node ** nd)
+{   
+    LOX
+    if((*nd) -> type == T_OP && (*nd) -> data.ch_t == OP_MUL)
+    {   
+        LOX
+        if(((*nd) -> right_son -> type == T_NUM) && ((*nd) -> right_son -> data.int_t == 1))
+        {
+            LOX
+            TreeDtor((*nd) -> right_son);
+            (*nd) -> right_son = NULL;
+            *nd = TreeNodeCopy((*nd) -> left_son);
+
+        }
+        else if(((*nd) -> left_son -> type == T_NUM) && ((*nd) -> left_son -> data.int_t == 1))
+        {
+            LOX
+            TreeDtor((*nd) -> left_son);
+            (*nd) -> left_son = NULL;
+            *nd = TreeNodeCopy((*nd) -> right_son);
+        }
+        else if(((*nd) -> right_son -> type == T_NUM) && ((*nd) -> right_son -> data.int_t == 0) || ((*nd) -> left_son -> type == T_NUM) && ((*nd) -> left_son -> data.int_t == 0))
+        {
+            LOX
+            TreeDtor((*nd) -> left_son);
+            TreeDtor((*nd) -> right_son);
+
+            (*nd) -> left_son = NULL;
+            (*nd) -> right_son = NULL;
+
+            *nd = NUM(0);
+        }
+    }
+    LOX
+    if((*nd) -> left_son) TreeSimp(&((*nd) ->left_son));
+    LOX
+    if((*nd) -> right_son) TreeSimp(&((*nd) -> right_son));
+    LOX
+
 }
