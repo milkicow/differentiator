@@ -48,12 +48,12 @@ void TreeDtor(node * nd)  //дерево и его поддерево
 }
 
 
-void TreePrintInOrder(FILE * fp, node * nd, int n)
+void TreePrintInOrder(FILE * fp, node * nd)
 {   
     assert(fp);
     assert(nd);
-    fprintf(fp, "\n%*s", n, "{");
-    if(nd -> left_son) TreePrintInOrder(fp, nd -> left_son, n + 4);
+    fprintf(fp, "%s", "{");
+    if(nd -> left_son) TreePrintInOrder(fp, nd -> left_son);
 
     switch (nd -> type)
     {
@@ -66,20 +66,257 @@ void TreePrintInOrder(FILE * fp, node * nd, int n)
     case T_OP:
         fprintf(fp, "%c", nd -> data.ch_t);
         break;
+
+
+    #define function(f)            \
+    case F_##f:                     \
+            fprintf(fp, #f);         \
+            break;
+
+    case T_FUN:
+        switch (nd -> data.ch_t)
+        {
+            function(sin)
+            function(cos)
+            function(tg)
+            function(ctg)
+            function(ln)
+            function(log)
+            function(sh)
+            function(ch)
+            function(th)
+            function(cth)
+
+            #undef function
+
+            default:
+                printf("unidentified function");
+                exit(EXIT_FAILURE);
+                LOX
+                break;
+        }
+
+        break;
+
+
     case T_UNK:
 
+        printf("unknow type");
+        exit(EXIT_FAILURE);
         break;
 
     default:
+
+        LOX
+        printf("unidentified type");
+        exit(EXIT_FAILURE);
         break;
     }
 
-    if(nd -> right_son) TreePrintInOrder(fp, nd -> right_son, n + 4);
-    if(!nd -> left_son && !nd -> right_son) n = 2;
+    if(nd -> right_son) TreePrintInOrder(fp, nd -> right_son);
+    fprintf(fp, "%s", "}");
+} 
 
-    fprintf(fp, "%*s\n", n, "}");
+void TreePrintTex(FILE * fp, node * nd)
+{
+    assert(fp);
+    assert(nd);
+
+    switch(nd -> type)
+    {
+    case T_NUM:
+        fprintf(fp, "%d", nd -> data.int_t);
+        break;
+
+    case T_VAR:
+        fprintf(fp, "%c", nd -> data.ch_t);
+        break;
+    
+    case T_OP:
+        switch(nd -> data.ch_t)
+        {
+        case OP_ADD:  
+            fprintf(fp, "\\left(");
+            if (nd -> left_son) TreePrintTex(fp, nd -> left_son);
+            fprintf(fp, "%c", nd -> data.ch_t);
+            if (nd -> right_son) TreePrintTex(fp, nd -> right_son);
+            fprintf(fp, "\\right)");
+            break;
+        
+        case OP_SUB:
+            fprintf(fp, "\\left(");
+            if (nd -> left_son) TreePrintTex(fp, nd -> left_son);
+            fprintf(fp, "%c", nd -> data.ch_t);
+            if (nd -> right_son) TreePrintTex(fp, nd -> right_son);
+            fprintf(fp, "\\right)");
+            break;
+        
+        case OP_MUL:
+            if (nd -> left_son) TreePrintTex(fp, nd -> left_son);
+            fprintf(fp, "\\cdot ");
+            if (nd -> right_son) TreePrintTex(fp, nd -> right_son);
+            break;
+        
+        case OP_DIV:
+            fprintf(fp, "\\frac{");
+            if (nd -> left_son) TreePrintTex(fp, nd -> left_son);
+            fprintf(fp, "}{");
+            if (nd -> right_son) TreePrintTex(fp, nd -> right_son);
+            fprintf(fp, "}");
+            break;
+        
+        case OP_DEG:
+            if (nd -> left_son) 
+            {   
+                fprintf(fp, " \\left( ");
+                TreePrintTex(fp, nd -> left_son);
+                fprintf(fp, " \\right) ");
+            }
+            fprintf(fp, "%c", nd -> data.ch_t);
+            fprintf(fp, "{");
+            if (nd -> right_son) TreePrintTex(fp, nd -> right_son);
+            fprintf(fp, "}");
+            break;
+
+        default:
+            LOX
+            printf("unidentified type");
+            exit(EXIT_FAILURE);
+            break;
+            
+
+        }
+        break;
+
+
+    #define function(f)                                     \
+    case F_##f:                                              \
+        fprintf(fp, "\\"#f"\\left(");                         \
+        if(nd -> right_son) TreePrintTex(fp, nd -> right_son); \
+        fprintf(fp, "\\right)");                                \
+        break;
+
+
+    case T_FUN:
+        switch (nd -> data.ch_t)
+        {
+            function(sin)
+            function(cos)
+            function(tg)
+            function(ctg)
+            function(ln)
+            function(log)
+            function(sh)
+            function(ch)
+            function(th)
+            function(cth)
+
+            #undef function
+
+            default:
+                printf("unidentified function");
+                exit(EXIT_FAILURE);
+                LOX
+                break;
+        }
+
+        break;
+
+    
+    default:
+        LOX
+        printf("unidentified type");
+        exit(EXIT_FAILURE);
+        break;
+    }
 }
 
+/*
+void TreePrintInOrder(FILE * fp, node * nd)
+{   
+    assert(fp);
+    assert(nd);
+    //fprintf(fp, "%s", "{");
+    if (nd -> type == T_OP && (nd -> data.ch_t == OP_ADD || nd -> data.ch_t == OP_SUB))
+    {
+        fprintf(fp, "%s", "(");
+    }
+    else if (nd -> type == T_OP && (nd -> data.ch_t == OP_MUL || nd -> data.ch_t == OP_DIV || nd -> data.ch_t == OP_DEG))
+    {
+        fprintf(fp, "%s", "{");
+    }
+    
+    if(nd -> left_son) TreePrintInOrder(fp, nd -> left_son);
+
+    switch (nd -> type)
+    {
+    case T_NUM:
+        fprintf(fp, "%d", nd -> data.int_t);
+        break;
+    case T_VAR:
+        fprintf(fp, "%c", nd -> data.ch_t);
+        break;
+    case T_OP:
+        fprintf(fp, "%c", nd -> data.ch_t);
+        break;
+
+
+    #define function(f)            \
+    case F_##f:                     \
+            fprintf(fp, #f);         \
+            break;
+
+    case T_FUN:
+        switch (nd -> data.ch_t)
+        {
+            function(sin)
+            function(cos)
+            function(tg)
+            function(ctg)
+            function(ln)
+            function(log)
+            function(sh)
+            function(ch)
+            function(th)
+            function(cth)
+
+            #undef function
+
+            default:
+                printf("unidentified function");
+                exit(EXIT_FAILURE);
+                LOX
+                break;
+        }
+
+        break;
+
+
+    case T_UNK:
+
+        printf("unknow type");
+        exit(EXIT_FAILURE);
+        break;
+
+    default:
+
+        LOX
+        printf("unidentified type");
+        exit(EXIT_FAILURE);
+        break;
+    }
+
+    if(nd -> right_son) TreePrintInOrder(fp, nd -> right_son);
+    if (nd -> type == T_OP && (nd -> data.ch_t == OP_ADD || nd -> data.ch_t == OP_SUB))
+    {
+        fprintf(fp, "%s", ")");
+    }
+    else if (nd -> type == T_OP && (nd -> data.ch_t == OP_MUL || nd -> data.ch_t == OP_DIV || nd -> data.ch_t == OP_DEG))
+    {
+        fprintf(fp, "%s", "}");
+    }
+}
+*/
 
 
 /*
@@ -186,28 +423,6 @@ void TreePrint(node * nd, FILE * fp)
                 LOX
                 break;
         }
-    /*
-    case T_FUN:
-        LOX
-        switch (nd -> data.ch_t)
-        {
-        case F_sin:
-            fprintf(fp, "node%p [shape=record,label= sin ];\n", nd);
-            break;
-        
-        case F_cos:
-            fprintf(fp, "node%p [shape=record,label= cos ];\n", nd);
-            break;
-
-        case F_tg:
-            fprintf(fp, "node%p [shape=record,label= tg ];\n", nd);
-            break;
-
-        default:
-            LOX
-            break;
-        }
-    */
 
     default:
         LOX
@@ -263,7 +478,7 @@ void Read(FILE * fp, node ** nd)
         LOX
         (*nd) -> type = T_OP;
         (*nd) -> data.ch_t = symbol;
-        printf("%c\n", symbol);
+        //printf("%c\n", symbol);
     }
     else if(isalpha(symbol))
     {   
@@ -274,14 +489,13 @@ void Read(FILE * fp, node ** nd)
             fscanf(fp, "%c", &symbol); 
         }
         ungetc(symbol, fp);
-        printf("%s\n", func);
+        //printf("%s\n", func);
 
         #define function(f)                     \
         if(strcmp(func, #f) == 0)                \
         {                                         \
             (*nd) -> type = T_FUN;                 \
             (*nd) -> data.ch_t = F_##f;             \
-            printf("in def enum = %d\n", F_##f);     \
         } else                                         
 
         function(sin)
@@ -294,26 +508,7 @@ void Read(FILE * fp, node ** nd)
         function(ch)
         function(th)
         function(cth)
-        /*
-        if(strcmp(func, "sin") == 0)
-        {   
-            LOX
-            (*nd) -> type = T_FUN;
-            (*nd) -> data.ch_t = F_SIN;
-        }
-        else if(strcmp(func, "cos") == 0)
-        {   
-            LOX
-            (*nd) -> type = T_FUN;
-            (*nd) -> data.ch_t = F_COS;
-        }
-        else if(strcmp(func, "tg") == 0)
-        {   
-            LOX
-            (*nd) -> type = T_FUN;
-            (*nd) -> data.ch_t = F_TG;
-        }
-        */
+
         #undef function
         {
             LOX
@@ -331,38 +526,6 @@ void Read(FILE * fp, node ** nd)
         (*nd) -> data.int_t = number;
     }
 }
-
-/*
-void TreeScanf(FILE * fp, node ** nd)
-{   
-    LOX
-    DATA data = { 0 };
-    char bracket[10];
-    LOX
-    fscanf(fp, "%s", bracket);
-    LOX
-    if(strcmp(bracket, "{") == 0)
-    {   
-        LOX
-        TreeNodeAdd(T_UNK, nd, data);
-        LOX
-        TreeScanf(fp, &(*nd) -> left_son);
-        LOX
-        Read(fp, nd);
-        //fscanf(fp, "%d", data); вместо этого - Read
-        LOX
-        TreeScanf(fp, &(*nd) -> right_son);
-    }
-    else if(strcmp(bracket, "}") == 0)
-    {   
-        LOX
-        ungetc('}', fp);
-        return;
-    }
-    fscanf(fp, "%s", bracket);   
-
-}*/
-
 
 void TreeScanf(FILE * fp, node ** nd)
 {   
@@ -394,8 +557,8 @@ void TreeScanf(FILE * fp, node ** nd)
 
 
 
-#define dL TreeDiff(nd -> left_son)
-#define dR TreeDiff(nd -> right_son)
+#define dL TreeDiff(fp, nd -> left_son)
+#define dR TreeDiff(fp, nd -> right_son)
 #define cL TreeNodeCopy(nd -> left_son)
 #define cR TreeNodeCopy(nd -> right_son)
 #define sin TreeSin(nd -> right_son)
@@ -405,17 +568,19 @@ void TreeScanf(FILE * fp, node ** nd)
 #define minus TreeNodeAdd2(T_NUM, NULL, data_minus)
 
 
-node * TreeDiff(node * nd)
+node * TreeDiff(FILE * fp, node * nd)
 {
     DATA data = { 0 };
 
     switch (nd -> type)
     {
     case T_NUM:
+        TexConst(fp, nd, 0);
         return NUM(0);
         break;
 
     case T_VAR:
+        TexConst(fp, nd, 1);
         return NUM(1);
         break;
 
@@ -424,23 +589,25 @@ node * TreeDiff(node * nd)
         {
         case OP_ADD:
             LOX
-
+            TexAdd(fp, nd);
             return TreeAdd(dL, dR);
             break;
 
         case OP_SUB:
             LOX
-
+            TexSub(fp, nd);
             return TreeSub(dL, dR);
             break;
 
         case OP_MUL:
             LOX
+            TexMul(fp, nd);
             return TreeAdd(TreeMul(dL, cR), TreeMul(cL, dR));
             break;
 
         case OP_DIV:
             LOX
+            TexDiv(fp, nd);
             return TreeDiv(TreeSub(TreeMul(dL, cR), TreeMul(cL, dR)), DEG(cR, NUM(2)));
 
             break;
@@ -450,16 +617,19 @@ node * TreeDiff(node * nd)
             if(nd -> left_son -> type == T_NUM)
             {   
                 if(nd -> right_son -> type == T_NUM)
-                {
+                {   
+                    TexConst(fp, nd, 0);
                     return NUM(0);
                 }
                 else
-                {
-                    return TreeMul(TreeMul(DEG(nd -> left_son, nd ->right_son), LN(nd -> left_son)), dR);
+                {   
+                    TexDegFun(fp, nd);
+                    return TreeMul(TreeMul(DEG(nd -> left_son, nd -> right_son), LN(nd -> left_son)), dR);
                 }
             }
             else if(nd -> right_son -> type == T_NUM)
             {  
+                TexDegNum(fp, nd);
                 data.int_t = nd -> right_son -> data.int_t - 1;
                 return TreeMul(TreeMul(DEG(nd -> left_son, TreeNodeAdd2(T_NUM, NULL, data)), cR), dL);
                 data.int_t = 0;
@@ -467,7 +637,8 @@ node * TreeDiff(node * nd)
             }
             else
             {
-                return TreeMul(DEG(nd -> left_son, nd -> right_son), TreeDiff(TreeMul(nd -> right_son, LN(nd -> left_son))));
+                TexDegTow(fp, nd);
+                return TreeMul(DEG(nd -> left_son, nd -> right_son), TreeDiff(fp, TreeMul(nd -> right_son, LN(nd -> left_son))));
             }
             break;
         
@@ -484,61 +655,61 @@ node * TreeDiff(node * nd)
         {
         case F_sin:
             LOX
-
+            TexSin(fp, nd);
             return TreeMul(cos, dR);
             break;
         
         case F_cos:
             LOX
-
+            TexCos(fp, nd);
             return TreeMul(TreeMul(sin, NUM(-1)), dR);
             break;
 
         case F_tg:
             LOX
-
+            TexTg(fp, nd);
             return TreeDiv(dR, TreeMul(cos, cos));
             break;
 
         case F_ctg:
             LOX
-
+            TexCtg(fp, nd);
             return TreeDiv(TreeMul(NUM(-1), dR), TreeMul(sin, sin));
             break;
 
         case F_ln:
             LOX
-
+            TexLn(fp, nd);
             return TreeDiv(dR, cR);
             break;
 
         case F_log:
             LOX
-
+            TexLog(fp, nd);
             return TreeDiv(dR, TreeMul(cR, LN(NUM(10))));
             break;
 
         case F_sh:
             LOX
-
+            TexSh(fp, nd);
             return TreeMul(ch, dR);
             break;
 
         case F_ch:
             LOX
-
+            TexCh(fp, nd);
             return TreeMul(sh, dR);
             break;
 
         case F_th:
             LOX
-
+            TexTh(fp, nd);
             return TreeDiv(dR, TreeMul(ch, ch));
             break;
 
         case F_cth:
             LOX
-
+            TexCth(fp, nd);
             return TreeDiv(TreeMul(NUM(-1), dR), TreeMul(sh, sh));
             break;
 
@@ -557,6 +728,303 @@ node * TreeDiff(node * nd)
         break;
     }
 }
+
+void TexDiffNode(FILE * fp, node * nd)
+{
+    fprintf(fp, " \\left(");
+    TreePrintTex(fp, nd);
+    fprintf(fp, " \\right)'");
+}
+
+void TexNode(FILE * fp, node * nd)
+{
+    fprintf(fp, " \\left(");
+    TreePrintTex(fp, nd);
+    fprintf(fp, " \\right)");
+}
+
+void TexConst(FILE * fp, node * nd, int num)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+    fprintf(fp, "%d", num);
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexAdd(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+    TexDiffNode(fp, nd -> left_son);
+    fprintf(fp, " + ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, "$$\n \\newline");
+}
+
+void TexSub(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+    TexDiffNode(fp, nd -> left_son);
+    fprintf(fp, " - ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, "$$\n \\newline"); 
+}
+
+void TexMul(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    TexDiffNode(fp, nd -> left_son);
+    fprintf(fp, " \\cdot ");
+    TexNode(fp, nd -> right_son);
+    fprintf(fp, " + ");
+    TexNode(fp, nd -> left_son);
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexDiv(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, "\\frac{ ");
+    TexDiffNode(fp, nd -> left_son);
+    fprintf(fp, " \\cdot ");
+    TexNode(fp, nd -> right_son);
+    fprintf(fp, " - ");
+    TexNode(fp, nd -> left_son);
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, "}{");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, "^2 }");
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexDegFun(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = "); 
+
+    TexNode(fp, nd);
+    fprintf(fp, " \\cdot \\ln \\left( %d \\right) \\cdot", nd -> left_son -> data.int_t);
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexDegNum(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = "); 
+
+    fprintf(fp, "%d", nd -> right_son -> data.int_t);
+    nd -> right_son -> data.int_t = nd -> right_son -> data.int_t - 1;
+    fprintf(fp, " \\cdot ");
+    TexNode(fp, nd);
+    nd -> right_son -> data.int_t = nd -> right_son -> data.int_t + 1;    
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> left_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexDegTow(FILE * fp, node * nd)
+{   
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = "); 
+
+    TexNode(fp, nd);
+    fprintf(fp, " \\cdot \\left(");
+    TexNode(fp, nd -> right_son);
+    fprintf(fp, " \\cdot \\ln ");
+    TexNode(fp, nd -> left_son);
+    fprintf(fp, " \\right)' ");
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexSin(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\cos \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right) ");
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+
+void TexCos(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " - \\sin \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right) ");
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexTg(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    fprintf(fp, " \\cos \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right)^2 }");
+
+    fprintf(fp, " $$\n \\newline"); 
+}
+
+void TexCtg(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " - \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    fprintf(fp, " \\sin \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right)^2 }");
+
+    fprintf(fp, " $$\n \\newline"); 
+}
+
+void TexLn(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " }");
+
+    fprintf(fp, " $$\n \\newline"); 
+}
+
+void TexLog(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\cdot ");
+    fprintf(fp, "ln(10)");
+    fprintf(fp, " }");
+
+    fprintf(fp, " $$\n \\newline"); 
+
+}
+
+void TexSh(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\ch \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right) ");
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexCh(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\sh \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right) ");
+    fprintf(fp, " \\cdot ");
+    TexDiffNode(fp, nd -> right_son);
+
+    fprintf(fp, " $$\n \\newline");
+}
+
+void TexTh(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    fprintf(fp, " \\ch \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right)^2 }");
+
+    fprintf(fp, " $$\n \\newline"); 
+}
+
+void TexCth(FILE * fp, node * nd)
+{
+    fprintf(fp, "$$ ");
+    TexDiffNode(fp, nd);
+    fprintf(fp, " = ");
+
+    fprintf(fp, " - \\frac{ ");
+    TexDiffNode(fp, nd -> right_son);
+    fprintf(fp, " }{ ");
+    fprintf(fp, " \\sh \\left( ");
+    TreePrintTex(fp, nd -> right_son);
+    fprintf(fp, " \\right)^2 }");
+
+    fprintf(fp, " $$\n \\newline"); 
+}
+
+#undef dL
+#undef dR
+#undef cL
+#undef cR
+#undef sin
+#undef cos
+#undef sh
+#undef ch
+#undef minus
 
 node * TreeAdd(node * left_son, node * right_son)
 {
@@ -677,8 +1145,9 @@ node * TreeNodeCopy(node * nd)
     return new_nd;
 }
 
-void TreeSimp(node ** nd)
+void TreeSimp(node ** nd, int * status)
 {   
+    node * original = *nd;
     LOX
     if((*nd) -> type == T_OP && (*nd) -> data.ch_t == OP_MUL)
     {   
@@ -709,11 +1178,152 @@ void TreeSimp(node ** nd)
 
             *nd = NUM(0);
         }
+        else if(((*nd) -> right_son -> type == T_OP) && ((*nd) -> right_son -> data.ch_t == OP_DIV) && ((*nd) -> right_son -> left_son -> type == T_NUM) && ((*nd) -> right_son -> left_son -> data.int_t == 1) && ((*nd) -> left_son))
+        {
+            TreeDtor((*nd) -> right_son -> left_son);
+            (*nd) -> right_son = TreeNodeCopy((*nd) -> right_son -> right_son);
+
+            TreeDtor((*nd) -> right_son -> right_son);
+            (*nd) -> data.ch_t = OP_DIV;
+        }
+        else if(((*nd) -> left_son -> type == T_OP) && ((*nd) -> left_son -> data.ch_t == OP_DIV) && ((*nd) -> left_son -> left_son -> type == T_NUM) && ((*nd) -> left_son -> left_son -> data.int_t == 1) && ((*nd) -> right_son))
+        {   
+
+            node * copy = NULL;
+            copy = TreeNodeCopy((*nd) -> left_son -> right_son);
+
+            (*nd) -> left_son = TreeNodeCopy((*nd) -> right_son);
+            (*nd) -> right_son = copy;
+            (*nd) -> data.ch_t = OP_DIV;
+        } 
     }
+    if((*nd) -> type == T_OP && (*nd) -> data.ch_t == OP_ADD)
+    {
+        if(((*nd) -> right_son -> type == T_NUM) && ((*nd) -> right_son -> data.int_t == 0))
+        {
+            TreeDtor((*nd) -> right_son);
+            (*nd) = TreeNodeCopy((*nd) -> left_son);
+        } 
+        else if(((*nd) -> left_son -> type == T_NUM) && ((*nd) -> left_son -> data.int_t == 0))
+        {
+            TreeDtor((*nd) -> left_son);
+            (*nd) = TreeNodeCopy((*nd) -> right_son);
+        }
+    }
+    if((*nd) -> type == T_OP && (*nd) -> data.ch_t == OP_SUB)
+    {
+        if(((*nd) -> right_son -> type == T_NUM) && ((*nd) -> right_son -> data.int_t == 0))
+        {
+            TreeDtor((*nd) -> right_son);
+            (*nd) = TreeNodeCopy((*nd) -> left_son);
+        }
+        else if(((*nd) -> left_son -> type == T_NUM) && ((*nd) -> left_son -> data.int_t == 0))
+        {
+            TreeDtor((*nd) -> left_son);
+            (*nd) = TreeNodeCopy((*nd) -> right_son);
+            (*nd) -> data.int_t = 0 - (*nd) -> data.int_t;
+        }
+
+    }
+
     LOX
-    if((*nd) -> left_son) TreeSimp(&((*nd) ->left_son));
+    if((*nd) -> left_son) TreeSimp(&((*nd) ->left_son), status);
     LOX
-    if((*nd) -> right_son) TreeSimp(&((*nd) -> right_son));
+    if((*nd) -> right_son) TreeSimp(&((*nd) -> right_son), status);
     LOX
 
+    if (*nd != original) 
+    {
+        *status = changed;
+    }
+
+}
+
+void TexIntro(FILE * fp)
+{
+    fprintf(fp, "\\documentclass[a4paper,12pt]{article} %% добавить leqno в [] для нумерации слева\n\
+\\usepackage[a4paper,top=1.3cm,bottom=2cm,left=1.5cm,right=1.5cm,marginparwidth=0.75cm]{geometry}\n\
+\\usepackage{cmap}					%% поиск в PDF\n\
+\\usepackage[warn]{mathtext} 		%% русские буквы в фомулах\n\
+\\usepackage[T2A]{fontenc}			%% кодировка\n\
+\\usepackage[utf8]{inputenc}			%% кодировка исходного текста\n\
+\\usepackage[english,russian]{babel}	%% локализация и переносы\n\
+\\usepackage{physics}\n\
+\\usepackage{multirow}\n\
+\\allowdisplaybreaks\n\
+\n\
+%%%%%% Нормальное размещение таблиц (писать [H] в окружении таблицы)\n\
+\\usepackage{float}\n\
+\\restylefloat{table}\n\
+\n\
+\n\
+\n\
+\\usepackage{graphicx}\n\
+\n\
+\\usepackage{wrapfig}\n\
+\\usepackage{tabularx}\n\
+\n\
+\\usepackage{hyperref}\n\
+\\usepackage[rgb]{xcolor}\n\
+\\hypersetup{\n\
+	colorlinks=true,urlcolor=blue\n\
+}\n\
+\n\
+\\usepackage{pgfplots}\n\
+\\pgfplotsset{compat=1.9}\n\
+\n\
+%%%%%% Дополнительная работа с математикой\n\
+\\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}  %%AMS\n\
+\\usepackage{icomma} %% \"Умная\" запятая: $0,2$ --- число, $0, 2$ --- перечисление\n\
+\n\
+%%%%%% Номера формул\n\
+\\mathtoolsset{showonlyrefs=true} %% Показывать номера только у тех формул, на которые есть \\eqref{} в тексте.\n\
+\n\
+%%%%%% Шрифты\n\
+\\usepackage{euscript}	 %% Шрифт Евклид\n\
+\\usepackage{mathrsfs} %% Красивый матшрифт\n\
+\n\
+%%%%%% Свои команды\n\
+\\DeclareMathOperator{\\sgn}{\\mathop{sgn}}\n\
+\n\
+%%%%%% Перенос знаков в формулах (по Львовскому)\n\
+\\newcommand*{\\hm}[1]{#1\\nobreak\\discretionary{}\n\
+	{\\hbox{$\\mathsurround=0pt #1$}}{}}\n\
+\n\
+\\date{\\today}\n\
+\n\
+\\usepackage{gensymb}\n\
+\n\
+\\title{Взятие производной}\n\
+\\author{Козлов Александр}\n\
+\\begin{document}\n\
+\\maketitle\n");
+
+    fprintf(fp, "\\section{}\n");
+
+}
+
+void TexPrint(FILE * fp, node * nd)
+{
+    node * diff = NULL;
+    int status = unchanged;
+
+    TexIntro(fp);
+    diff = TreeDiff(fp, nd);
+
+    do
+    {   
+        status = unchanged;
+        TreeSimp(&diff, &status);
+
+    } while (status == changed);
+
+
+    fprintf(fp, " Итого: \n \\newline ");
+    fprintf(fp, " $$ ");
+    TreePrintTex(fp, diff);
+    fprintf(fp, " $$ ");
+    TreeFDump(diff);
+
+    fprintf(fp, "\\end{document}\n");
 }

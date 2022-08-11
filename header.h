@@ -6,7 +6,10 @@
 #include <ctype.h>
 #include <math.h>
 
-#define LOX  printf("повезло повезло %d\n", __LINE__);                     
+#define LOX  printf("повезло повезло %d\n", __LINE__);       
+#undef LOX
+
+#define LOX
 
 
 enum TYPE
@@ -57,16 +60,21 @@ struct node
 
 };
 
+enum status
+{
+    changed,
+    unchanged,
+};
 
 node * TreeNodeAdd(int type, node ** nd, DATA data, node * left_son = NULL, node * right_son = NULL);
 void TreeDtor(struct node * nd);
-void TreePrintInOrder(FILE * fp, node * nd, int n);
+void TreePrintInOrder(FILE * fp, node * nd);
 void TreeFDump(node * nd);
 void TreePrint(node * nd, FILE * fp);
 void TreeSegDtor(node * nd);
 void TreeScanf(FILE * fp, node ** nd);
 void Read(FILE * fp, node ** nd);
-node * TreeDiff(node * nd);
+node * TreeDiff(FILE * fp, node * nd);
 node * TreeAdd(node * left_son, node * right_son);
 node * TreeSub(node * left_son, node * right_son);
 node * TreeMul(node * left_son, node * right_son);
@@ -80,9 +88,30 @@ node * LN(node * nd);
 node * TreeSh(node * right_son);
 node * TreeCh(node * right_son);
 node * DEG(node * left_son, node * right_son);
-void TreeSimp(node ** nd);
-
-
+void TreeSimp(node ** nd, int status);
+void TexIntro(FILE * fp);
+void TexPrint(FILE * fp, node * nd);
+void TexDiffNode(FILE * fp, node * nd);
+void TexNode(FILE * fp, node * nd);
+void TexConst(FILE * fp, node * nd, int num);
+void TexAdd(FILE * fp, node * nd);
+void TexSub(FILE * fp, node * nd);
+void TexMul(FILE * fp, node * nd);
+void TexDiv(FILE * fp, node * nd);
+void TexDegFun(FILE * fp, node * nd);
+void TexDegNum(FILE * fp, node * nd);
+void TexDegTow(FILE * fp, node * nd);
+void TexSin(FILE * fp, node * nd);
+void TexCos(FILE * fp, node * nd);
+void TexTg(FILE * fp, node * nd);
+void TexCtg(FILE * fp, node * nd);
+void TexLn(FILE * fp, node * nd);
+void TexLog(FILE * fp, node * nd);
+void TexSh(FILE * fp, node * nd);
+void TexCh(FILE * fp, node * nd);
+void TexTh(FILE * fp, node * nd);
+void TexCth(FILE * fp, node * nd);
+//void DiffEquation(FILE * fp, node * nd);
 
 
 

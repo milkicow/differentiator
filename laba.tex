@@ -1,0 +1,81 @@
+\documentclass[a4paper,12pt]{article} % добавить leqno в [] для нумерации слева
+\usepackage[a4paper,top=1.3cm,bottom=2cm,left=1.5cm,right=1.5cm,marginparwidth=0.75cm]{geometry}
+\usepackage{cmap}					% поиск в PDF
+\usepackage[warn]{mathtext} 		% русские буквы в фомулах
+\usepackage[T2A]{fontenc}			% кодировка
+\usepackage[utf8]{inputenc}			% кодировка исходного текста
+\usepackage[english,russian]{babel}	% локализация и переносы
+\usepackage{physics}
+\usepackage{multirow}
+\allowdisplaybreaks
+
+%%% Нормальное размещение таблиц (писать [H] в окружении таблицы)
+\usepackage{float}
+\restylefloat{table}
+
+
+
+\usepackage{graphicx}
+
+\usepackage{wrapfig}
+\usepackage{tabularx}
+
+\usepackage{hyperref}
+\usepackage[rgb]{xcolor}
+\hypersetup{
+	colorlinks=true,urlcolor=blue
+}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.9}
+
+%%% Дополнительная работа с математикой
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}  %AMS
+\usepackage{icomma} % "Умная" запятая: $0,2$ --- число, $0, 2$ --- перечисление
+
+%%% Номера формул
+\mathtoolsset{showonlyrefs=true} % Показывать номера только у тех формул, на которые есть \eqref{} в тексте.
+
+%%% Шрифты
+\usepackage{euscript}	 % Шрифт Евклид
+\usepackage{mathrsfs} % Красивый матшрифт
+
+%%% Свои команды
+\DeclareMathOperator{\sgn}{\mathop{sgn}}
+
+%%% Перенос знаков в формулах (по Львовскому)
+\newcommand*{\hm}[1]{#1\nobreak\discretionary{}
+	{\hbox{$\mathsurround=0pt #1$}}{}}
+
+\date{\today}
+
+\usepackage{gensymb}
+
+\title{Взятие производной}
+\author{Козлов Александр}
+\begin{document}
+\maketitle
+\section{}
+$$  \left(\sh\left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \cos\left(x\right)\right) \right)' =  \ch \left( \frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \cos\left(x\right) \right)  \cdot  \left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \cos\left(x\right) \right)' $$
+ \newline$$  \left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \cos\left(x\right) \right)' =  \left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)} \right)' \cdot  \left(\cos\left(x\right) \right) +  \left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)} \right) \cdot  \left(\cos\left(x\right) \right)' $$
+ \newline$$  \left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)} \right)' = \frac{  \left( \left( 3\cdot x \right) ^{\sin\left(x\right)} \right)' \cdot  \left(\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right) \right) -  \left( \left( 3\cdot x \right) ^{\sin\left(x\right)} \right) \cdot  \left(\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right) \right)'}{ \left(\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right) \right)'^2 } $$
+ \newline$$  \left( \left( 3\cdot x \right) ^{\sin\left(x\right)} \right)' =  \left( \left( 3\cdot x \right) ^{\sin\left(x\right)} \right) \cdot \left( \left(\sin\left(x\right) \right) \cdot \ln  \left(3\cdot x \right) \right)'  $$
+ \newline$$  \left(\sin\left(x\right)\cdot \ln\left(3\cdot x\right) \right)' =  \left(\sin\left(x\right) \right)' \cdot  \left(\ln\left(3\cdot x\right) \right) +  \left(\sin\left(x\right) \right) \cdot  \left(\ln\left(3\cdot x\right) \right)' $$
+ \newline$$  \left(\sin\left(x\right) \right)' =  \cos \left( x \right)  \cdot  \left(x \right)' $$
+ \newline$$  \left(x \right)' = 1 $$
+ \newline$$  \left(\ln\left(3\cdot x\right) \right)' =  \frac{  \left(3\cdot x \right)' }{ 3\cdot x } $$
+ \newline$$  \left(3\cdot x \right)' =  \left(3 \right)' \cdot  \left(x \right) +  \left(3 \right) \cdot  \left(x \right)' $$
+ \newline$$  \left(3 \right)' = 0 $$
+ \newline$$  \left(x \right)' = 1 $$
+ \newline$$  \left(\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right) \right)' =  - \frac{  \left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x} \right)' }{  \sin \left(  \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x} \right)^2 } $$
+ \newline$$  \left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x} \right)' =  \left( \left( 3\cdot x \right) ^{4} \right)' \cdot  \left( \left( 2 \right) ^{x} \right) +  \left( \left( 3\cdot x \right) ^{4} \right) \cdot  \left( \left( 2 \right) ^{x} \right)' $$
+ \newline$$  \left( \left( 3\cdot x \right) ^{4} \right)' = 4 \cdot  \left( \left( 3\cdot x \right) ^{3} \right) \cdot  \left(3\cdot x \right)' $$
+ \newline$$  \left(3\cdot x \right)' =  \left(3 \right)' \cdot  \left(x \right) +  \left(3 \right) \cdot  \left(x \right)' $$
+ \newline$$  \left(3 \right)' = 0 $$
+ \newline$$  \left(x \right)' = 1 $$
+ \newline$$  \left( \left( 2 \right) ^{x} \right)' =  \left( \left( 2 \right) ^{x} \right) \cdot \ln \left( 2 \right) \cdot \left(x \right)' $$
+ \newline$$  \left(x \right)' = 1 $$
+ \newline$$  \left(\cos\left(x\right) \right)' =  - \sin \left( x \right)  \cdot  \left(x \right)' $$
+ \newline$$  \left(x \right)' = 1 $$
+ \newline Итого: 
+ \newline  $$ \ch\left(\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \cos\left(x\right)\right)\cdot \left(\frac{\left( \left( 3\cdot x \right) ^{\sin\left(x\right)}\cdot \left(\cos\left(x\right)\cdot \ln\left(3\cdot x\right)+\sin\left(x\right)\cdot \frac{3}{3\cdot x}\right)\cdot \ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)- \left( 3\cdot x \right) ^{\sin\left(x\right)}\cdot \frac{-1\cdot \left( \left( 3\cdot x \right) ^{3}\cdot 4\cdot 3\cdot  \left( 2 \right) ^{x}+ \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\cdot \ln\left(2\right)\right)}{\sin\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)\cdot \sin\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\right)}{ \left( \ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right) \right) ^{2}}\cdot \cos\left(x\right)+\frac{ \left( 3\cdot x \right) ^{\sin\left(x\right)}}{\ctg\left( \left( 3\cdot x \right) ^{4}\cdot  \left( 2 \right) ^{x}\right)}\cdot \sin\left(x\right)\cdot -1\right) $$ \end{document}

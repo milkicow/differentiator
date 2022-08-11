@@ -11,18 +11,18 @@ int main()
     //printf("left_son ptr = %p\n", korney -> left_son);
     //printf("right_son ptr = %p\n", korney -> right_son);
 
-    LOX
-    diff = TreeDiff(korney);
-    LOX
-    TreeSimp(&diff);
-    LOX
-    TreeFDump(diff);
 
-    TreeDtor(korney);
+    FILE * tex = fopen("laba.tex", "w");
+
+    TexPrint(tex, korney);
+
     TreeDtor(diff);
 
-
     fclose(in);
+    fclose(tex);
+
+    system("latex laba.tex");
+    system("open laba.dvi"); 
 
     return 0;
 }
